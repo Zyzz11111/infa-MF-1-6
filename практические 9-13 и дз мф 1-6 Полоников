@@ -1,0 +1,161 @@
+лаба 9
+
+import numpy as np
+S = 23
+G = 6
+K = 80301
+A = np.array([[1, 5, 1], [4, -1, 1], [S, G, 2*(S+G+K)]])
+B = np.array([S-G+K+10, S-G+4*K-2, 2*((S-G)*(S+G+K)+G)+K*S])
+X0 = np.array([0, 0, 0])
+def simple_iteration_method(A, B, X0, max_iter=100, tol=1e-6):
+    n = len(B)
+    X = X0.copy()
+    for _ in range(max_iter):
+        X_new = np.zeros(n)
+        for i in range(n):
+            X_new[i] = (B[i] - A[i, :].dot(X_new) + A[i, i]*X_new[i]) / A[i, i]
+        if np.linalg.norm(X_new - X) < tol:
+            return X_new
+        X = X_new
+    return X
+
+# Решение СЛАУ методом простой итерации
+result_simple_iteration = simple_iteration_method(A, B, X0)
+print("Решение методом простой итерации:", result_simple_iteration)
+
+# Метод Зейделя
+def gauss_seidel_method(A, B, X0, max_iter=100, tol=1e-6):
+    n = len(B)
+    X = X0.copy()
+    for _ in range(max_iter):
+        for i in range(n):
+            X[i] = (B[i] - A[i, :i].dot(X[:i]) - A[i, i+1:].dot(X[i+1:])) / A[i, i]
+        if np.linalg.norm(A.dot(X) - B) < tol:
+            return X
+    return X
+
+# Решение СЛАУ методом Зейделя
+result_gauss_seidel = gauss_seidel_method(A, B, X0)
+print("Решение методом Зейделя:", result_gauss_seidel)
+........................................................
+лаба 10
+
+import numpy as np
+G = 6
+S = 23
+p = 2*(G + S)
+m = -p + S
+# Создание матрицы A
+A = np.array([[p, m, 2*S],[m, 2*p + S, m],[2*S, m, p]]) / 6
+eigenvalues, eigenvectors = np.linalg.eig(A)
+max_eigenvalue_index = np.argmax(np.abs(eigenvalues))
+max_eigenvalue = eigenvalues[max_eigenvalue_index]
+max_eigenvector = eigenvectors[:, max_eigenvalue_index]
+
+print("Собственные значения матрицы A:")
+print(eigenvalues)
+print("\nСобственные векторы матрицы A:")
+print(eigenvectors)
+print("\nМаксимальное по модулю собственное значение:")
+print(max_eigenvalue)
+print("\nСоответствующий ему собственный вектор:")
+print(max_eigenvector)
+.......................................................
+лаба 11
+
+def f(x):
+    return a*x**3 + b*x**2 + c*x + d
+
+a = 1
+b = 2
+c = 3
+d = 4
+h = 1
+x0 = 0
+x1 = h
+x2 = 2*h
+x3 = 3*h
+x4 = 4*h
+s_rectangle = h * (f(x0) + f(x1) + f(x2) + f(x3))
+s_trapezoid = h/2 * (f(x0) + 2*f(x1) + 2*f(x2) + f(x3))
+s_simpson = h/3 * (f(x0) + 4*f(x1) + 2*f(x2) + 4*f(x3) + f(x4))
+print("Метод прямоугольников:", s_rectangle)
+print("Метод трапеций:", s_trapezoid)
+print("Метод Симпсона:", s_simpson)
+......................................................
+лаба 12
+
+def f(x, a0, a1, a2, a3):
+    return a0 + a1*x + a2*x**2 + a3*x**3
+
+def bisection_method(f, a0, a1, a2, a3, a, b, epsilon):
+    if f(a, a0, a1, a2, a3) * f(b, a0, a1, a2, a3) > 0:
+        print("Корень не найден в данном отрезке.")
+        return None
+    
+    while (b - a) / 2.0 > epsilon:
+        c = (a + b) / 2.0
+        if f(c, a0, a1, a2, a3) == 0:
+            return c
+        elif f(c, a0, a1, a2, a3) * f(a, a0, a1, a2, a3) < 0:
+            b = c
+        else:
+            a = c
+    return (a + b) / 2.0
+
+a0, a1, a2, a3 = 29, 6, 10, -1
+a, b = 0, 3
+epsilon = 1e-5  # Изменим точность до 1e-5 для более точного результата
+
+root = bisection_method(f, a0, a1, a2, a3, a, b, epsilon)
+print("Корень полинома на отрезке x ∈ [0;3] методом половинного деления: ", root)
+.........................................................................................
+лаба 13
+
+x = [11, 13, 14, 14, 8, 5, 7, 12, 2, 1, 8, 15]
+y = [10, 12, 13, 14, 9, 6, 7, 11, 1, 1, 7, 15]
+avg_x = sum(x) / len(x)
+avg_y = sum(y) / len(y)
+numerator = sum([(xi - avg_x) * (yi - avg_y) for xi, yi in zip(x, y)])
+denominator = sum([(xi - avg_x) ** 2 for xi in x])
+
+a = numerator / denominator
+b = avg_y - a * avg_x
+print(f"Коэффициент a: {a}")
+print(f"Коэффициент b: {b}")
+..................................................................................
+дз защита
+
+def product_of_nonzero_elements(vector):
+    product = 1
+    for element in vector:
+        if element != 0:
+            product *= element
+    return product
+
+def find_max_product_column(matrix):
+    max_product = 0
+    max_product_column = 0
+    
+    for col in range(len(matrix[0])):
+        column_vector = [row[col] for row in matrix]
+        product = product_of_nonzero_elements(column_vector)
+        
+        if product > max_product:
+            max_product = product
+            max_product_column = col
+    
+    return max_product_column
+
+def main():
+    with open('input.txt', 'r') as file:
+        matrix = [list(map(int, line.split())) for line in file]
+
+    max_product_column = find_max_product_column(matrix)
+    max_product_column_elements = [row[max_product_column] for row in matrix]
+    
+    print("Elements of the column with the highest product of nonzero elements:")
+    print(max_product_column_elements)
+
+if __name__ == "__main__":
+    main()
